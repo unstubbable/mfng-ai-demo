@@ -6,6 +6,7 @@ import * as React from 'react';
 import {z} from 'zod';
 import type {AI, UIStateItem} from './ai.js';
 import {imageSearchParams, searchImages} from './google-image-search.js';
+import {ImageSelector} from './image-selector.js';
 import {Markdown} from './markdown.js';
 import {ProgressiveImage} from './progressive-image.js';
 
@@ -33,7 +34,7 @@ export async function submitUserMessage(
 
         A user might ask for images of any kind (only safe for work, though!) and you search for them and show them, using the input of the user for the various search parameters.
 
-        Use markdown in your messages if it improves how you can structure a response, highlight certain parts (e.g. the discussed subject's name), or to add links to other websites. Don't include images in markdown though, use the dedicated function instead.
+        Use markdown in your messages if it improves how you can structure a response, highlight certain parts (especially the discussed subject's name should be strong), or to add links to other websites. Don't include images in markdown though, use the dedicated function instead.
 
         Never ask the user whether they want to see images of the discussed subject, always show them unprompted.
 
@@ -153,14 +154,15 @@ export async function submitUserMessage(
                     {imageSet.status === `found` ? (
                       imageSet.images.map(
                         ({thumbnailUrl, url, width, height}) => (
-                          <ProgressiveImage
-                            key={thumbnailUrl}
-                            thumbnailUrl={thumbnailUrl}
-                            url={url}
-                            width={width}
-                            height={height}
-                            alt={imageSet.title}
-                          />
+                          <ImageSelector key={thumbnailUrl} url={url}>
+                            <ProgressiveImage
+                              thumbnailUrl={thumbnailUrl}
+                              url={url}
+                              width={width}
+                              height={height}
+                              alt={imageSet.title}
+                            />
+                          </ImageSelector>
                         ),
                       )
                     ) : (
