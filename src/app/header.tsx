@@ -8,8 +8,8 @@ export function Header(): React.ReactNode {
         <h2 className="text-sm">Deployed on AWS Lambda &amp; CloudFront</h2>
       </div>
       <a
-        href="https://github.com/unstubbable/mfng/"
-        title="MFNG GitHub Repo"
+        href="https://github.com/unstubbable/mfng-ai-demo"
+        title="MFNG AI Demo GitHub Repo"
         className="flex-shrink-0"
       >
         <img src="/client/github-mark-white.svg" className="h-8 w-8" />
