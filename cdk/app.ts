@@ -23,6 +23,6 @@ new MainStack(app, `mfng-ai-demo-app`, {
     region: process.env.CDK_DEFAULT_REGION,
   },
   bucketName: `mfng-ai-demo-app-assets`,
-  customDomain: {domainName: `strict.software`, subdomainName: `mfng-ai-demo`},
+  // customDomain: {domainName: `strict.software`, subdomainName: `mfng-ai-demo`},
   webAcl: wafStack.webAcl,
 });
