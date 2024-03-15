@@ -52,15 +52,15 @@ export class MainStack extends cdk.Stack {
       autoDeleteObjects: true,
     });
 
-    const customDomainName = customDomain
-      ? `${customDomain.subdomainName}.${customDomain.domainName}`
-      : undefined;
+    const customDomainName =
+      customDomain &&
+      `${customDomain.subdomainName}.${customDomain.domainName}`;
 
-    const certificate = customDomainName
-      ? new cdk.aws_certificatemanager.Certificate(this, `certificate`, {
-          domainName: customDomainName,
-        })
-      : undefined;
+    const hostedZone =
+      customDomain &&
+      cdk.aws_route53.HostedZone.fromLookup(this, `hosted-zone-lookup`, {
+        domainName: customDomain.domainName,
+      });
 
     const staticBehaviorOptions: cdk.aws_cloudfront.BehaviorOptions = {
       origin: new cdk.aws_cloudfront_origins.S3Origin(bucket),
@@ -68,7 +68,16 @@ export class MainStack extends cdk.Stack {
     };
 
     const distribution = new cdk.aws_cloudfront.Distribution(this, `cdn`, {
-      certificate,
+      certificate:
+        customDomainName && hostedZone
+          ? new cdk.aws_certificatemanager.Certificate(this, `certificate`, {
+              domainName: customDomainName,
+              validation:
+                cdk.aws_certificatemanager.CertificateValidation.fromDns(
+                  hostedZone,
+                ),
+            })
+          : undefined,
       domainNames: customDomainName ? [customDomainName] : undefined,
       defaultBehavior: {
         origin: new cdk.aws_cloudfront_origins.FunctionUrlOrigin(functionUrl, {
@@ -97,13 +106,7 @@ export class MainStack extends cdk.Stack {
       webAclId: this.#webAcl?.attrArn,
     });
 
-    if (customDomain) {
-      const hostedZone = cdk.aws_route53.HostedZone.fromLookup(
-        this,
-        `hosted-zone-lookup`,
-        {domainName: customDomain.domainName},
-      );
-
+    if (customDomain && hostedZone) {
       new cdk.aws_route53.ARecord(this, `a-record`, {
         zone: hostedZone,
         recordName: customDomain.subdomainName,
