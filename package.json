@@ -73,7 +73,7 @@
     "swc-loader": "^0.2.6",
     "tailwindcss": "^3.2.7",
     "tsx": "^4.7.1",
-    "turbo": "^1.12.5",
+    "turbo": "~1.11.3",
     "typescript": "^5.4.2",
     "webpack": "^5.77.0",
     "webpack-cli": "^5.0.1",
