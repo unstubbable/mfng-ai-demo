@@ -19,7 +19,7 @@ export function ImageSelector({
   const formAction = async () => {
     try {
       const message = await submitUserMessage(
-        `Tell me more about image ${url}`,
+        `Tell me more about image ${url}, keep it short.`,
       );
 
       setMessages((prevMessages) => [...prevMessages, message]);
