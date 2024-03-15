@@ -136,7 +136,7 @@ export class MainStack extends cdk.Stack {
           ),
         ],
         distribution,
-        distributionPaths: [],
+        distributionPaths: [`/client/*`],
         cacheControl: [
           cdk.aws_s3_deployment.CacheControl.setPublic(),
           cdk.aws_s3_deployment.CacheControl.maxAge(cdk.Duration.days(365)),
