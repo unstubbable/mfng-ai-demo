@@ -2,4 +2,3 @@ coverage
 package-lock.json
 dist
 lib
-**/.vercel/output

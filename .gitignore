@@ -4,7 +4,5 @@ dist
 lib
 tsconfig.tsbuildinfo
 .turbo
-.vercel
-.wrangler
 cdk.out
 cdk.context.json

@@ -1,46 +1,37 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "build": {},
-    "build:dev": {},
-    "build-dev-server": {
-      "dependsOn": ["build"]
+    "build": {
+      "inputs": [
+        "src/**/*",
+        "package.json",
+        "tailwind.config.cjs",
+        "webpack.config.js"
+      ],
+      "outputs": ["dist/**"]
     },
-    "build-dev-server:dev": {
-      "dependsOn": ["build:dev"]
+    "build:dev": {
+      "inputs": [
+        "src/**/*",
+        "package.json",
+        "tailwind.config.cjs",
+        "webpack.config.js"
+      ],
+      "outputs": ["dist/**"]
     },
     "deploy": {
       "dependsOn": ["build"],
       "cache": false
     },
-    "dev": {
-      "dependsOn": ["build-dev-server:dev"],
-      "cache": false,
-      "persistent": true
-    },
     "start": {
-      "dependsOn": ["build-dev-server"],
       "cache": false,
       "persistent": true
     },
-    "test": {},
     "watch": {
-      "dependsOn": ["build"],
       "cache": false,
       "persistent": true
     },
     "watch:dev": {
-      "dependsOn": ["build:dev"],
-      "cache": false,
-      "persistent": true
-    },
-    "watch-dev-server": {
-      "dependsOn": ["build-dev-server"],
-      "cache": false,
-      "persistent": true
-    },
-    "watch-dev-server:dev": {
-      "dependsOn": ["build-dev-server:dev"],
       "cache": false,
       "persistent": true
     }

@@ -33,8 +33,7 @@
       "files": ["**/*.cts", "**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "EXPERIMENTAL_useProjectService": true,
-        "EXPERIMENTAL_useSourceOfProjectReferenceRedirect": true
+        "project": true
       },
       "rules": {
         "@typescript-eslint/await-thenable": "error",
@@ -93,7 +92,7 @@
     "no-restricted-globals": [
       "error",
       {
-        "message": "Use \"dirname(fileURLToPath(import.meta.url))\" instead.",
+        "message": "Use \"import.meta.dirname\" instead.",
         "name": "__dirname"
       },
       {

@@ -1,32 +1,13 @@
 name: Deployment
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
-  deploy-cloudflare:
-    runs-on: ubuntu-latest
-    environment: Cloudflare Workers
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.node-version'
-          cache: 'npm'
-      - name: Install
-        run: npm ci --no-audit --no-fund
-      - name: Test
-        run: npm t
-      - name: Deploy
-        run: npm run deploy -- -F cloudflare-app
-
-  deploy-aws:
+  deploy:
     runs-on: ubuntu-latest
     environment: AWS
     env:
@@ -50,7 +31,7 @@ jobs:
           cache: 'npm'
       - name: Install
         run: npm ci --no-audit --no-fund
-      - name: Test
-        run: npm t
+      - name: Build
+        run: npm run build
       - name: Deploy
-        run: npm run deploy -- -F aws-app -- --require-approval never
+        run: npm run deploy -- --require-approval never

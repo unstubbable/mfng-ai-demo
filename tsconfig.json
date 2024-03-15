@@ -1,15 +1,43 @@
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "checkJs": true,
-    "noEmit": true
+    "composite": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "inlineSources": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "lib": ["dom"],
+    "module": "node16",
+    "moduleResolution": "node16",
+    "noEmit": true,
+    "noErrorTruncation": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "lib",
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2022",
+    "types": ["react/experimental", "react-dom/experimental"],
+    "verbatimModuleSyntax": true
   },
-  "include": ["*.js", "*.cjs"],
-  "references": [
-    {"path": "apps/aws-app"},
-    {"path": "apps/cloudflare-app"},
-    {"path": "apps/vercel-app"},
-    {"path": "packages/core"},
-    {"path": "packages/webpack-rsc"}
-  ]
+  "include": [
+    "*.cjs",
+    "*.js",
+    "cdk/**/*",
+    "dev-server/**/*",
+    "src/**/*",
+    "types/**/*"
+  ],
+  "exclude": ["dist"]
 }
