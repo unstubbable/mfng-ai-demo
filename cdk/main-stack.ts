@@ -148,12 +148,9 @@ export class MainStack extends cdk.Stack {
     new cdk.aws_s3_deployment.BucketDeployment(this, `assets-deployment-root`, {
       destinationBucket: bucket,
       sources: [
-        cdk.aws_s3_deployment.Source.asset(
-          path.join(distDirname, `static/favicon.ico`),
-        ),
-        cdk.aws_s3_deployment.Source.asset(
-          path.join(distDirname, `static/robots.txt`),
-        ),
+        cdk.aws_s3_deployment.Source.asset(path.join(distDirname, `static`), {
+          exclude: [`client/*`],
+        }),
       ],
       distribution,
       distributionPaths: [`/favicon.ico`, `/robots.txt`],
