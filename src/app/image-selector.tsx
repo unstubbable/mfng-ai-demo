@@ -23,7 +23,7 @@ export function ImageSelector({
       );
 
       setMessages((prevMessages) => [...prevMessages, message]);
-      document.body.scrollIntoView({block: `end`});
+      document.body.scrollIntoView({block: `end`, behavior: `smooth`});
     } catch (error) {
       console.error(error);
       const errorMessage = getErrorMessage(error);
