@@ -1,4 +1,4 @@
-# MFNG AI SDK Generative UI Demo
+# ⚗️ MFNG AI SDK Generative UI Demo
 
 This demo showcases a chat assistant capable of displaying images of various
 kinds.
