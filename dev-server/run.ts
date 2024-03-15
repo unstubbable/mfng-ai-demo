@@ -1,6 +1,7 @@
 import {serve} from '@hono/node-server';
 import {serveStatic} from '@hono/node-server/serve-static';
 import {Hono} from 'hono';
+import {compress} from 'hono/compress';
 import {authMiddleware} from './auth-middleware.js';
 import './stub-awslambda.js';
 
@@ -10,6 +11,7 @@ const {app: handlerApp} = handlerModule as {app: Hono};
 const app = new Hono();
 
 app.use(authMiddleware);
+app.use(compress());
 app.use(`/client/*`, serveStatic({root: `dist/static`}));
 app.route(`/`, handlerApp);
 
