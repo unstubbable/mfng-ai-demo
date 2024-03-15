@@ -12,7 +12,7 @@ const app = new Hono();
 const staticMiddleware = serveStatic({root: `dist/static`});
 
 app.use(authMiddleware);
-app.use(compress());
+app.get(compress());
 app.use(`/favicon.ico`, staticMiddleware);
 app.use(`/robots.txt`, staticMiddleware);
 app.use(`/client/*`, staticMiddleware);
