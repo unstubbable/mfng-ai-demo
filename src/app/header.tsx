@@ -12,7 +12,11 @@ export function Header(): React.ReactNode {
         title="MFNG AI Demo GitHub Repo"
         className="flex-shrink-0"
       >
-        <img src="/client/github-mark-white.svg" className="h-8 w-8" />
+        <img
+          src="/client/github-mark-white.svg"
+          className="h-8 w-8"
+          alt="GitHub Logo"
+        />
       </a>
     </header>
   );
