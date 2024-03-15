@@ -35,7 +35,10 @@ export async function submitUserMessage(
 
         Use markdown in your messages if it improves how you can structure a response, highlight certain parts (e.g. the discussed subject's name), or to add links to other websites. Don't include images in markdown though, use the dedicated function instead.
 
-        Never ask the user whether they want to see images of the discussed subject, always show them unprompted.`,
+        Never ask the user whether they want to see images of the discussed subject, always show them unprompted.
+
+        Before showing images of a certain artist it might make sense to introduce them to the user first, with a couple of words.
+        `,
       },
       ...aiState.get(),
     ],
