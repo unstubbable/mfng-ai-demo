@@ -23,8 +23,12 @@ export function Markdown({text}: MarkdownProps): React.ReactNode {
           <h4 className="mb-4 text-lg font-bold">{children}</h4>
         ),
         p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+        ol: ({children}) => <ol className="mb-3 last:mb-0">{children}</ol>,
+        ul: ({children}) => <ul className="mb-3 last:mb-0">{children}</ul>,
         li: ({children}) => (
-          <li className="ml-4 list-item list-disc">{children}</li>
+          <li className="mb-2 ml-4 list-item list-disc last:mb-0">
+            {children}
+          </li>
         ),
         pre: ({children}) => (
           <pre className="bg-zinc-100 p-2 text-xs">{children}</pre>
