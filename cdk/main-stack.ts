@@ -62,6 +62,11 @@ export class MainStack extends cdk.Stack {
         })
       : undefined;
 
+    const staticBehaviorOptions: cdk.aws_cloudfront.BehaviorOptions = {
+      origin: new cdk.aws_cloudfront_origins.S3Origin(bucket),
+      cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_OPTIMIZED,
+    };
+
     const distribution = new cdk.aws_cloudfront.Distribution(this, `cdn`, {
       certificate,
       domainNames: customDomainName ? [customDomainName] : undefined,
@@ -84,10 +89,9 @@ export class MainStack extends cdk.Stack {
           cdk.aws_cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
       },
       additionalBehaviors: {
-        '/client/*': {
-          origin: new cdk.aws_cloudfront_origins.S3Origin(bucket),
-          cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_OPTIMIZED,
-        },
+        '/favicon.ico': staticBehaviorOptions,
+        '/robots.txt': staticBehaviorOptions,
+        '/client/*': staticBehaviorOptions,
       },
       priceClass: cdk.aws_cloudfront.PriceClass.PRICE_CLASS_100,
       webAclId: this.#webAcl?.attrArn,
@@ -117,16 +121,43 @@ export class MainStack extends cdk.Stack {
       });
     }
 
-    new cdk.aws_s3_deployment.BucketDeployment(this, `assets-deployment`, {
+    new cdk.aws_s3_deployment.BucketDeployment(
+      this,
+      `assets-deployment-client`,
+      {
+        destinationBucket: bucket,
+        destinationKeyPrefix: `client`,
+        sources: [
+          cdk.aws_s3_deployment.Source.asset(
+            path.join(distDirname, `static/client`),
+          ),
+        ],
+        distribution,
+        distributionPaths: [],
+        cacheControl: [
+          cdk.aws_s3_deployment.CacheControl.setPublic(),
+          cdk.aws_s3_deployment.CacheControl.maxAge(cdk.Duration.days(365)),
+          cdk.aws_s3_deployment.CacheControl.immutable(),
+        ],
+      },
+    );
+
+    new cdk.aws_s3_deployment.BucketDeployment(this, `assets-deployment-root`, {
       destinationBucket: bucket,
-      destinationKeyPrefix: `client`,
       sources: [
         cdk.aws_s3_deployment.Source.asset(
-          path.join(distDirname, `static/client`),
+          path.join(distDirname, `static/favicon.ico`),
+        ),
+        cdk.aws_s3_deployment.Source.asset(
+          path.join(distDirname, `static/robots.txt`),
         ),
       ],
       distribution,
-      cacheControl: [cdk.aws_s3_deployment.CacheControl.immutable()],
+      distributionPaths: [`/favicon.ico`, `/robots.txt`],
+      cacheControl: [
+        cdk.aws_s3_deployment.CacheControl.setPublic(),
+        cdk.aws_s3_deployment.CacheControl.maxAge(cdk.Duration.days(3)),
+      ],
     });
 
     new cdk.CfnOutput(this, `function-url-output`, {

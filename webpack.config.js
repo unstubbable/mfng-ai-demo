@@ -171,6 +171,7 @@ export default function createConfigs(_env, argv) {
             },
           ],
         },
+        {test: /\.svg$/, type: `asset/inline`},
         cssRule,
       ],
     },
@@ -231,7 +232,7 @@ export default function createConfigs(_env, argv) {
     },
     plugins: [
       new CopyPlugin({
-        patterns: [{from: path.join(import.meta.dirname, `static`)}],
+        patterns: [{from: path.join(import.meta.dirname, `static`), to: `..`}],
       }),
       new MiniCssExtractPlugin({
         filename: dev ? `main.css` : `main.[contenthash:8].css`,

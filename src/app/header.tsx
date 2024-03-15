@@ -1,4 +1,5 @@
 import * as React from 'react';
+import gitHubLogo from './github-mark-white.svg';
 
 export function Header(): React.ReactNode {
   return (
@@ -12,11 +13,7 @@ export function Header(): React.ReactNode {
         title="MFNG AI Demo GitHub Repo"
         className="flex-shrink-0"
       >
-        <img
-          src="/client/github-mark-white.svg"
-          className="h-8 w-8"
-          alt="GitHub Logo"
-        />
+        <img src={gitHubLogo} className="h-8 w-8" alt="GitHub Logo" />
       </a>
     </header>
   );

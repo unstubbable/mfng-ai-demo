@@ -9,10 +9,13 @@ import './stub-awslambda.js';
 const handlerModule = await import(`../dist/handler/index.js`);
 const {app: handlerApp} = handlerModule as {app: Hono};
 const app = new Hono();
+const staticMiddleware = serveStatic({root: `dist/static`});
 
 app.use(authMiddleware);
 app.use(compress());
-app.use(`/client/*`, serveStatic({root: `dist/static`}));
+app.use(`/favicon.ico`, staticMiddleware);
+app.use(`/robots.txt`, staticMiddleware);
+app.use(`/client/*`, staticMiddleware);
 app.route(`/`, handlerApp);
 
 serve({fetch: app.fetch, port: 3000}, ({address, port}) => {

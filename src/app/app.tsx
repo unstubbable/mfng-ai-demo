@@ -16,7 +16,7 @@ export function App(): JSX.Element {
           content="A demo that showcases a chat assistant that's capable of displaying images of various
 kinds, using the Vercel AI SDK 3.0 with Generative UI, powered by React Server Components."
         />
-        <link rel="icon" href="/client/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       </head>
       <body className="bg-zinc-100">
         <Header />
