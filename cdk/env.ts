@@ -14,8 +14,8 @@ const envVariables = z.object({
   GOOGLE_SEARCH_API_KEY: z.string(),
   GOOGLE_SEARCH_SEARCH_ENGINE_ID: z.string(),
   OPENAI_API_KEY: z.string(),
-  UPSTASH_REDIS_REST_TOKEN: z.string(),
-  UPSTASH_REDIS_REST_URL: z.string(),
+  // UPSTASH_REDIS_REST_TOKEN: z.string(),
+  // UPSTASH_REDIS_REST_URL: z.string(),
 });
 
 envVariables.parse(process.env);
