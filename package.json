@@ -15,6 +15,7 @@
     "compile:watch": "tsc --build --watch --preserveWatchOutput",
     "predeploy": "cdk bootstrap --app 'tsx cdk/app.ts'",
     "deploy": "cdk diff --app 'tsx cdk/app.ts' && cdk deploy --app 'tsx cdk/app.ts' --all",
+    "deploy:preview": "cdk diff --app 'tsx cdk/app-preview.ts' && cdk deploy --app 'tsx cdk/app-preview.ts' --all",
     "dev": "turbo watch:dev start",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
