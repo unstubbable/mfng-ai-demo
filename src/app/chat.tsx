@@ -6,6 +6,7 @@ import Textarea from 'react-textarea-autosize';
 import type {AI} from './ai.js';
 import {ChatMessage} from './chat-message.js';
 import {getErrorMessage} from './get-error-message.js';
+import {LoadingIndicator} from './loading-indicator.js';
 import {useEnterSubmit} from './use-enter-submit.js';
 
 export function Chat({children}: React.PropsWithChildren): React.ReactNode {
@@ -52,7 +53,7 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
     startTransition(async () => {
       setOptimisticMessages((prevMessages) => [
         ...prevMessages,
-        {id: 0, role: `assistant`, display: <p>&hellip;</p>},
+        {id: 0, role: `assistant`, display: <LoadingIndicator />},
       ]);
 
       try {

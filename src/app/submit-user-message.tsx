@@ -8,6 +8,7 @@ import type {AI, UIStateItem} from './ai.js';
 import {imageSearchParams, searchImages} from './google-image-search.js';
 import {ImageSelector} from './image-selector.js';
 import {createImageSet, serializeImageSets} from './image-set.js';
+import {LoadingIndicator} from './loading-indicator.js';
 import {Markdown} from './markdown.js';
 import {ProgressiveImage} from './progressive-image.js';
 
@@ -27,7 +28,7 @@ export async function submitUserMessage(
     model: `gpt-4-turbo-preview`,
     // @ts-expect-error
     provider: openai,
-    initial: <p>&hellip;</p>,
+    initial: <LoadingIndicator />,
     messages: [
       {
         role: `system`,
