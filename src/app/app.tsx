@@ -13,7 +13,7 @@ export function App(): JSX.Element {
         <title>AI SDK with Generative UI on AWS</title>
         <meta
           name="description"
-          content="A demo that showcases a chat assistant that's capable of displaying images of various
+          content="A demo showcasing a chat assistant capable of displaying images of various
 kinds, using the Vercel AI SDK 3.0 with Generative UI, powered by React Server Components."
         />
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
