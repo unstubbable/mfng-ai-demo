@@ -21,12 +21,18 @@ export function createImageSet(options: CreateImageSetOptions): ImageSet {
       JSON.stringify(searchResult.error),
     );
 
-    return {status: `error` as const, title, errorMessage};
+    if (searchResult.error.code === 400) {
+      console.warn(
+        `The env variables GOOGLE_SEARCH_API_KEY and GOOGLE_SEARCH_SEARCH_ENGINE_ID must be provided.`,
+      );
+    }
+
+    return {status: `error`, title, errorMessage};
   }
 
   return searchResult.length === 0
-    ? {status: `not-found` as const, title, notFoundMessage}
-    : {status: `found` as const, images: searchResult, title};
+    ? {status: `not-found`, title, notFoundMessage}
+    : {status: `found`, images: searchResult, title};
 }
 
 export function serializeImageSets(imageSets: ImageSet[]): string {
