@@ -2,8 +2,25 @@ import {Ratelimit} from '@upstash/ratelimit';
 import {Redis} from '@upstash/redis';
 import type {MiddlewareHandler} from 'hono';
 
+let ratelimit: Ratelimit;
+
+try {
+  ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.fixedWindow(10, `10 m`),
+  });
+} catch (error) {
+  if (process.env.UPSTASH_REDIS_REST_URL) {
+    console.error(error);
+  } else {
+    console.warn(
+      `Unable to create Redis instance, no rate limits are applied.`,
+    );
+  }
+}
+
 export const ratelimitMiddleware: MiddlewareHandler = async (context, next) => {
-  if (context.req.method !== `POST`) {
+  if (!ratelimit || context.req.method !== `POST`) {
     return next();
   }
 
@@ -16,14 +33,9 @@ export const ratelimitMiddleware: MiddlewareHandler = async (context, next) => {
   }
 
   try {
-    const ratelimit = new Ratelimit({
-      redis: Redis.fromEnv(),
-      limiter: Ratelimit.slidingWindow(10, `10 m`),
-      analytics: true,
-    });
-
-    const {success, reset, remaining} = await ratelimit.limit(address);
+    const {success, reset, remaining, pending} = await ratelimit.limit(address);
     console.debug(`Rate limit result`, {address, success, remaining});
+    await pending;
 
     if (!success) {
       console.warn(`Too Many Requests by ${address}`);
@@ -33,13 +45,7 @@ export const ratelimitMiddleware: MiddlewareHandler = async (context, next) => {
       });
     }
   } catch (error) {
-    if (process.env.UPSTASH_REDIS_REST_URL) {
-      console.error(error);
-    } else {
-      console.warn(
-        `Unable to create Redis instance, no rate limits are applied.`,
-      );
-    }
+    console.error(error);
   }
 
   return next();
