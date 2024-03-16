@@ -13,4 +13,4 @@ The app is deployed on AWS Lambda & CloudFront. Due to cost considerations, it
 is heavily rate-limited, which may result in occasional error responses.
 
 You can try it out at
-[https://d1qnlsm4fu0sfj.cloudfront.net](https://d1qnlsm4fu0sfj.cloudfront.net).
+[https://mfng-ai-demo.strict.software](https://mfng-ai-demo.strict.software).
