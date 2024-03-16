@@ -12,6 +12,6 @@ new Stack(app, `mfng-ai-demo`, {
     region: `us-east-1`,
   },
   bucketName: `mfng-ai-demo-assets`,
-  customDomain: {domainName: `strict.software`, subdomainName: `mfng-ai-demo`},
+  customDomain: {domainName: `strict.software`, subdomainName: `ai-demo.mfng`},
   webAclName: `mfng-ai-demo`,
 });
