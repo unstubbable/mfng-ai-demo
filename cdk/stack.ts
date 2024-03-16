@@ -30,6 +30,7 @@ export class Stack extends cdk.Stack {
         entry: path.join(distDirname, `handler/index.js`),
         runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
         bundling: {format: cdk.aws_lambda_nodejs.OutputFormat.ESM},
+        memorySize: 1769, // equivalent of one vCPU
         timeout: cdk.Duration.minutes(1),
         environment: {
           AWS_HANDLER_VERIFY_HEADER: process.env.AWS_HANDLER_VERIFY_HEADER,
