@@ -23,7 +23,6 @@ export function ImageSelector({
       );
 
       setMessages((prevMessages) => [...prevMessages, message]);
-      document.body.scrollIntoView({block: `end`, behavior: `smooth`});
     } catch (error) {
       console.error(error);
       const errorMessage = getErrorMessage(error);
@@ -33,6 +32,8 @@ export function ImageSelector({
         {id: Date.now(), role: `error`, display: <p>{errorMessage}</p>},
       ]);
     }
+
+    document.body.scrollIntoView({block: `end`, behavior: `smooth`});
   };
 
   return <button formAction={formAction}>{children}</button>;
