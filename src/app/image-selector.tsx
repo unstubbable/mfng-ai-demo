@@ -16,7 +16,9 @@ export function ImageSelector({
   const [, setMessages] = useUIState<typeof AI>();
   const {submitUserMessage} = useActions<typeof AI>();
 
-  const formAction = async () => {
+  const handleClick = async () => {
+    document.body.scrollIntoView({block: `end`, behavior: `smooth`});
+
     try {
       const message = await submitUserMessage(
         `Tell me more about image ${url}, keep it short.`,
@@ -36,5 +38,9 @@ export function ImageSelector({
     document.body.scrollIntoView({block: `end`, behavior: `smooth`});
   };
 
-  return <button formAction={formAction}>{children}</button>;
+  return (
+    <button type="button" onClick={handleClick}>
+      {children}
+    </button>
+  );
 }
