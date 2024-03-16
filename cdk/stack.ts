@@ -1,25 +1,27 @@
 import path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import type {Construct} from 'constructs';
+import {WebAcl} from './web-acl.js';
 
 const distDirname = path.join(import.meta.dirname, `../dist/`);
 
-export interface MainStackProps extends cdk.StackProps {
+export interface StackProps extends cdk.StackProps {
   readonly bucketName: string;
   readonly customDomain?: {
     readonly domainName: string;
     readonly subdomainName: string;
   };
-  readonly webAcl?: cdk.aws_wafv2.CfnWebACL;
+  readonly webAclName?: string;
 }
 
-export class MainStack extends cdk.Stack {
-  #webAcl: cdk.aws_wafv2.CfnWebACL | undefined;
-
-  constructor(scope: Construct, id: string, props: MainStackProps) {
-    const {bucketName, customDomain, webAcl, ...otherProps} = props;
+export class Stack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: StackProps) {
+    const {bucketName, customDomain, webAclName, ...otherProps} = props;
     super(scope, id, otherProps);
-    this.#webAcl = webAcl;
+
+    const webAcl = webAclName
+      ? new WebAcl(this, `web-acl`, {webAclName})
+      : undefined;
 
     const lambdaFunction = new cdk.aws_lambda_nodejs.NodejsFunction(
       this,
@@ -104,7 +106,7 @@ export class MainStack extends cdk.Stack {
         '/client/*': staticBehaviorOptions,
       },
       priceClass: cdk.aws_cloudfront.PriceClass.PRICE_CLASS_100,
-      webAclId: this.#webAcl?.attrArn,
+      webAclId: webAcl?.attrArn,
     });
 
     if (customDomain && hostedZone) {

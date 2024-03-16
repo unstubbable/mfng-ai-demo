@@ -1,21 +1,32 @@
 import * as cdk from 'aws-cdk-lib';
 import type {Construct} from 'constructs';
 
-export interface WafStackProps extends cdk.StackProps {
+export interface WebAclProps {
   readonly webAclName: string;
 }
 
-export class WafStack extends cdk.Stack {
-  #webAcl: cdk.aws_wafv2.CfnWebACL;
-  #webAclName: string;
-  #rulePriority = 0;
+export class WebAcl extends cdk.aws_wafv2.CfnWebACL {
+  constructor(scope: Construct, id: string, props: WebAclProps) {
+    const {webAclName} = props;
 
-  constructor(scope: Construct, id: string, props: WafStackProps) {
-    const {webAclName, ...otherProps} = props;
-    super(scope, id, otherProps);
-    this.#webAclName = webAclName;
+    let rulePriority = 0;
 
-    this.#webAcl = new cdk.aws_wafv2.CfnWebACL(this, `waf`, {
+    const createWebAclRule = (
+      rule: Omit<
+        cdk.aws_wafv2.CfnWebACL.RuleProperty,
+        'priority' | 'visibilityConfig'
+      >,
+    ): cdk.aws_wafv2.CfnWebACL.RuleProperty => ({
+      ...rule,
+      priority: (rulePriority += 1),
+      visibilityConfig: {
+        cloudWatchMetricsEnabled: false,
+        metricName: `${webAclName}-${rule.name}`,
+        sampledRequestsEnabled: true,
+      },
+    });
+
+    super(scope, id, {
       name: webAclName,
       scope: `CLOUDFRONT`,
       defaultAction: {
@@ -27,7 +38,7 @@ export class WafStack extends cdk.Stack {
         sampledRequestsEnabled: true,
       },
       rules: [
-        this.#createWebAclRule({
+        createWebAclRule({
           name: `request-body-size-limit`,
           statement: {
             sizeConstraintStatement: {
@@ -39,7 +50,7 @@ export class WafStack extends cdk.Stack {
           },
           action: {block: {customResponse: {responseCode: 413}}},
         }),
-        this.#createWebAclRule({
+        createWebAclRule({
           name: `rate-limit`,
           statement: {
             rateBasedStatement: {
@@ -59,26 +70,5 @@ export class WafStack extends cdk.Stack {
         }),
       ],
     });
-  }
-
-  get webAcl(): cdk.aws_wafv2.CfnWebACL {
-    return this.#webAcl;
-  }
-
-  #createWebAclRule(
-    rule: Omit<
-      cdk.aws_wafv2.CfnWebACL.RuleProperty,
-      'priority' | 'visibilityConfig'
-    >,
-  ): cdk.aws_wafv2.CfnWebACL.RuleProperty {
-    return {
-      ...rule,
-      priority: (this.#rulePriority += 1),
-      visibilityConfig: {
-        cloudWatchMetricsEnabled: false,
-        metricName: `${this.#webAclName}-${rule.name}`,
-        sampledRequestsEnabled: true,
-      },
-    };
   }
 }
