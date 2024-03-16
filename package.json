@@ -24,7 +24,7 @@
     "watch:dev": "webpack --mode development --watch"
   },
   "dependencies": {
-    "@mfng/core": "^4.1.1",
+    "@mfng/core": "^4.1.2",
     "@upstash/ratelimit": "^1.0.1",
     "@upstash/redis": "^1.28.4",
     "ai": "^3.0.11",
