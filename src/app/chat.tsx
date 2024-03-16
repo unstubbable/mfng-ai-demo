@@ -102,9 +102,9 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
               setInputValue(event.target.value);
             }}
             onKeyDown={handleKeyDown}
+            tabIndex={0}
             autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
+            data-1p-ignore
           />
         </div>
       </div>
