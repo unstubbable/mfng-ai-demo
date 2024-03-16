@@ -33,7 +33,11 @@ export function Welcome(): React.ReactNode {
       <ul className="space-y-3">
         {examplePrompts.map((prompt) => (
           <li key={prompt} className="ml-4 list-item list-disc">
-            <button className="text-left" name="example-prompt" value={prompt}>
+            <button
+              className="cursor-pointer text-left"
+              name="example-prompt"
+              value={prompt}
+            >
               <span className="text-black underline">{prompt}</span>
             </button>
           </li>

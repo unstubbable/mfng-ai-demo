@@ -47,7 +47,7 @@ export function ImageSelector({
   };
 
   return (
-    <button type="button" onClick={handleClick}>
+    <button className="cursor-pointer" type="button" onClick={handleClick}>
       {children}
     </button>
   );
