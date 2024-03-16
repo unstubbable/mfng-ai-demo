@@ -68,6 +68,8 @@ export class Stack extends cdk.Stack {
     const staticBehaviorOptions: cdk.aws_cloudfront.BehaviorOptions = {
       origin: new cdk.aws_cloudfront_origins.S3Origin(bucket),
       cachePolicy: cdk.aws_cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      viewerProtocolPolicy:
+        cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
     };
 
     const distribution = new cdk.aws_cloudfront.Distribution(this, `cdn`, {
@@ -99,6 +101,25 @@ export class Stack extends cdk.Stack {
         }),
         originRequestPolicy:
           cdk.aws_cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        viewerProtocolPolicy:
+          cdk.aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        responseHeadersPolicy: new cdk.aws_cloudfront.ResponseHeadersPolicy(
+          this,
+          `response-headers-policy`,
+          {
+            securityHeadersBehavior: {
+              frameOptions: {
+                frameOption: cdk.aws_cloudfront.HeadersFrameOption.DENY,
+                override: true,
+              },
+              strictTransportSecurity: {
+                accessControlMaxAge: cdk.Duration.days(365),
+                includeSubdomains: true,
+                override: true,
+              },
+            },
+          },
+        ),
       },
       additionalBehaviors: {
         '/favicon.ico': staticBehaviorOptions,
