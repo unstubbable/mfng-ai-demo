@@ -1,5 +1,8 @@
 import {z} from 'zod';
 
+export type Image = z.TypeOf<typeof image>;
+export type ImageSearchResult = z.TypeOf<typeof imageSearchResult>;
+
 const apiKey = process.env.GOOGLE_SEARCH_API_KEY!;
 const searchEngineId = process.env.GOOGLE_SEARCH_SEARCH_ENGINE_ID!;
 
@@ -55,46 +58,40 @@ export const imageSearchParams = z.object({
     ),
 });
 
-const imageSearchResults = z.union([
-  z.object({error: z.object({code: z.number(), message: z.string()})}),
-  z
-    .object({
-      kind: z.string(),
-      items: z
-        .array(
-          z
-            .object({
-              link: z.string(),
-              snippet: z.string(),
-              image: z.object({
-                contextLink: z.string(),
-                thumbnailLink: z.string(),
-                width: z.number(),
-                height: z.number(),
-              }),
-            })
-            .transform(
-              ({
-                link,
-                snippet,
-                image: {contextLink, thumbnailLink, width, height},
-              }) => ({
-                website: {url: contextLink, snippet},
-                thumbnailUrl: thumbnailLink,
-                url: link,
-                width,
-                height,
-              }),
-            ),
-        )
-        .default([]),
-    })
-    .transform(({items}) => items),
-]);
+const image = z
+  .object({
+    link: z.string(),
+    snippet: z.string(),
+    image: z.object({
+      contextLink: z.string(),
+      thumbnailLink: z.string(),
+      width: z.number(),
+      height: z.number(),
+    }),
+  })
+  .transform(
+    ({link, snippet, image: {contextLink, thumbnailLink, width, height}}) => ({
+      website: {url: contextLink, snippet},
+      thumbnailUrl: thumbnailLink,
+      url: link,
+      width,
+      height,
+    }),
+  );
+
+const images = z
+  .object({kind: z.string(), items: z.array(image).default([])})
+  .transform(({items}) => items);
+
+const error = z.object({
+  error: z.object({code: z.number(), message: z.string()}),
+});
+
+const imageSearchResult = z.union([error, images]);
 
 export async function searchImages(
   params: z.TypeOf<typeof imageSearchParams>,
-): Promise<z.TypeOf<typeof imageSearchResults>> {
+): Promise<z.TypeOf<typeof imageSearchResult>> {
   const url = new URL(`https://www.googleapis.com/customsearch/v1`);
 
   url.search = new URLSearchParams({
@@ -108,7 +105,7 @@ export async function searchImages(
 
   const response = await fetch(url);
   const json = await response.json();
-  const result = imageSearchResults.safeParse(json);
+  const result = imageSearchResult.safeParse(json);
 
   if (result.success) {
     return result.data;

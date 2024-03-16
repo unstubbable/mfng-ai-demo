@@ -7,6 +7,7 @@ import {z} from 'zod';
 import type {AI, UIStateItem} from './ai.js';
 import {imageSearchParams, searchImages} from './google-image-search.js';
 import {ImageSelector} from './image-selector.js';
+import {createImageSet, serializeImageSets} from './image-set.js';
 import {Markdown} from './markdown.js';
 import {ProgressiveImage} from './progressive-image.js';
 
@@ -109,22 +110,13 @@ export async function submitUserMessage(
 
           const imageSets = await Promise.all(
             searchParamsList.map(
-              async ({searchParams, title, notFoundMessage, errorMessage}) => {
-                const result = await searchImages(searchParams);
-
-                if (`error` in result) {
-                  console.error(
-                    `Error searching for images:`,
-                    JSON.stringify(result.error),
-                  );
-
-                  return {status: `error` as const, title, errorMessage};
-                }
-
-                return result.length === 0
-                  ? {status: `not-found` as const, title, notFoundMessage}
-                  : {status: `found` as const, images: result, title};
-              },
+              async ({searchParams, title, notFoundMessage, errorMessage}) =>
+                createImageSet({
+                  searchResult: await searchImages(searchParams),
+                  title,
+                  notFoundMessage,
+                  errorMessage,
+                }),
             ),
           );
 
@@ -140,7 +132,7 @@ export async function submitUserMessage(
             {
               role: `function`,
               name: `search_and_show_images`,
-              content: JSON.stringify(imageSets),
+              content: serializeImageSets(imageSets),
             },
           ]);
 
