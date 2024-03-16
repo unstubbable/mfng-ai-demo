@@ -16,6 +16,9 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
   const {submitUserMessage} = useActions<typeof AI>();
   const {formRef, handleKeyDown} = useEnterSubmit();
 
+  const [optimisticMessages, setOptimisticMessages] =
+    React.useOptimistic(messages);
+
   const handleSubmit = (
     event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>,
   ) => {
@@ -47,6 +50,11 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
     setInputValue(``);
 
     startTransition(async () => {
+      setOptimisticMessages((prevMessages) => [
+        ...prevMessages,
+        {id: 0, role: `assistant`, display: <p>&hellip;</p>},
+      ]);
+
       try {
         const message = await submitUserMessage(userInput);
 
@@ -56,7 +64,7 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
         const errorMessage = getErrorMessage(error);
 
         setMessages((prevMessages) => [
-          ...prevMessages.slice(0, -1),
+          ...prevMessages,
           {id: Date.now(), role: `error`, display: <p>{errorMessage}</p>},
         ]);
       }
@@ -71,9 +79,9 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
       className="mx-auto flex max-w-3xl flex-col space-y-3 pb-36"
       onSubmit={handleSubmit}
     >
-      {messages.length === 0 && children}
+      {optimisticMessages.length === 0 && children}
 
-      {messages.map((message) => (
+      {optimisticMessages.map((message) => (
         <ChatMessage key={message.id} role={message.role}>
           {message.display}
         </ChatMessage>

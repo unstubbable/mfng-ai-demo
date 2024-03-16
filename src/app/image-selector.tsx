@@ -17,6 +17,13 @@ export function ImageSelector({
   const {submitUserMessage} = useActions<typeof AI>();
 
   const handleClick = async () => {
+    const optimisticMessageId = Date.now();
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {id: optimisticMessageId, role: `assistant`, display: <p>&hellip;</p>},
+    ]);
+
     document.body.scrollIntoView({block: `end`, behavior: `smooth`});
 
     try {
@@ -24,18 +31,19 @@ export function ImageSelector({
         `Tell me more about image ${url}, keep it short.`,
       );
 
-      setMessages((prevMessages) => [...prevMessages, message]);
+      setMessages((prevMessages) => [
+        ...prevMessages.filter(({id}) => id !== optimisticMessageId),
+        message,
+      ]);
     } catch (error) {
       console.error(error);
       const errorMessage = getErrorMessage(error);
 
       setMessages((prevMessages) => [
-        ...prevMessages,
+        ...prevMessages.filter(({id}) => id !== optimisticMessageId),
         {id: Date.now(), role: `error`, display: <p>{errorMessage}</p>},
       ]);
     }
-
-    document.body.scrollIntoView({block: `end`, behavior: `smooth`});
   };
 
   return (
