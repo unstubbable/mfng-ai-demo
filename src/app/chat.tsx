@@ -16,8 +16,18 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
   const {submitUserMessage} = useActions<typeof AI>();
   const {formRef, handleKeyDown} = useEnterSubmit();
 
-  const formAction = (formData: FormData) => {
-    const examplePrompt = formData.get(`example-prompt`)?.toString();
+  const handleSubmit = (
+    event: React.SyntheticEvent<HTMLFormElement, SubmitEvent>,
+  ) => {
+    event.preventDefault();
+
+    const {submitter} = event.nativeEvent;
+
+    const examplePrompt =
+      submitter instanceof HTMLButtonElement &&
+      submitter.name === `example-prompt`
+        ? submitter.value
+        : undefined;
 
     if (examplePrompt && textareaRef.current) {
       setInputValue(examplePrompt);
@@ -34,12 +44,13 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
       {id: Date.now(), role: `user`, display: <div>{userInput}</div>},
     ]);
 
+    setInputValue(``);
+
     startTransition(async () => {
       try {
         const message = await submitUserMessage(userInput);
 
         setMessages((prevMessages) => [...prevMessages, message]);
-        setInputValue(``);
       } catch (error) {
         console.error(error);
         const errorMessage = getErrorMessage(error);
@@ -58,7 +69,7 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
     <form
       ref={formRef}
       className="mx-auto flex max-w-3xl flex-col space-y-3 pb-36"
-      action={formAction}
+      onSubmit={handleSubmit}
     >
       {messages.length === 0 && children}
 
