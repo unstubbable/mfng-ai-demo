@@ -33,7 +33,7 @@ export class WafStack extends cdk.Stack {
             sizeConstraintStatement: {
               fieldToMatch: {body: {}},
               comparisonOperator: `GT`,
-              size: 1024,
+              size: 1024 * 10,
               textTransformations: [{priority: 0, type: `NONE`}],
             },
           },
