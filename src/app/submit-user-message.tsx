@@ -4,6 +4,7 @@ import {getMutableAIState, render} from 'ai/rsc';
 import {OpenAI} from 'openai';
 import * as React from 'react';
 import {z} from 'zod';
+import {type UserInput, fromUserInput} from './ai-state.js';
 import type {AI, UIStateItem} from './ai.js';
 import {imageSearchParams, searchImages} from './google-image-search.js';
 import {ImageSelector} from './image-selector.js';
@@ -14,33 +15,13 @@ import {ProgressiveImage} from './progressive-image.js';
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
-export type UserInput =
-  | {action: 'message'; content: string}
-  | {action: 'select-image'; url: string};
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function submitUserMessage(
   userInput: UserInput,
 ): Promise<UIStateItem> {
   const aiState = getMutableAIState<typeof AI>();
 
-  switch (userInput.action) {
-    case `select-image`:
-      aiState.update([
-        ...aiState.get(),
-        {
-          role: `assistant`,
-          content: `[user wants to know more about the image ${userInput.url}. keep it short.]`,
-        },
-      ]);
-      break;
-    case `message`:
-      aiState.update([
-        ...aiState.get(),
-        {role: `user`, content: userInput.content},
-      ]);
-      break;
-  }
+  aiState.update([...aiState.get(), fromUserInput(userInput)]);
 
   let lastTextContent: string | undefined;
 

@@ -1,17 +1,7 @@
 import {createAI} from 'ai/rsc';
 import type * as React from 'react';
+import type {AIStateItem} from './ai-state.js';
 import {submitUserMessage} from './submit-user-message.js';
-
-export type AIStateItem =
-  | {
-      readonly role: 'user' | 'assistant' | 'system';
-      readonly content: string;
-    }
-  | {
-      readonly role: 'function';
-      readonly content: string;
-      readonly name: string;
-    };
 
 export interface UIStateItem {
   readonly id: number;
