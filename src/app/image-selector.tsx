@@ -27,9 +27,7 @@ export function ImageSelector({
     document.body.scrollIntoView({block: `end`, behavior: `smooth`});
 
     try {
-      const message = await submitUserMessage(
-        `Tell me more about image ${url}, keep it short.`,
-      );
+      const message = await submitUserMessage({action: `select-image`, url});
 
       setMessages((prevMessages) => [
         ...prevMessages.filter(({id}) => id !== optimisticMessageId),
