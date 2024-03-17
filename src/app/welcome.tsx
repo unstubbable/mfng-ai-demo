@@ -21,6 +21,7 @@ const examplePrompts = [
   `Pick a painter from the 18th century and show me some of their work.`,
   `List some of the earliest photographs.`,
   `What are those funny-looking, furless cats called?`,
+  `Surprise me with paintings, but let me choose the style.`,
 ];
 
 export function Welcome(): React.ReactNode {

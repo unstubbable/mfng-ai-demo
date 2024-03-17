@@ -49,6 +49,7 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
     ]);
 
     setInputValue(``);
+    document.body.scrollIntoView({block: `end`, behavior: `smooth`});
 
     startTransition(async () => {
       setOptimisticMessages((prevMessages) => [
