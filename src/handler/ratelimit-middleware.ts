@@ -8,6 +8,7 @@ try {
   ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
     limiter: Ratelimit.fixedWindow(10, `10 m`),
+    analytics: true,
   });
 } catch (error) {
   if (process.env.UPSTASH_REDIS_REST_URL) {
