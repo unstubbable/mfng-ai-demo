@@ -9,27 +9,34 @@ export type AIStateItem =
       readonly name: string;
     };
 
-export type UserInput =
-  | {
-      readonly action: 'message';
-      readonly content: string;
-    }
-  | {
-      readonly action: 'select-image';
-      readonly url: string;
-    };
+export type UserInputAction = 'choose-option' | 'message' | 'select-image';
+
+export interface UserInput {
+  readonly action: UserInputAction;
+  readonly content: string;
+}
 
 export function fromUserInput(userInput: UserInput): AIStateItem {
-  switch (userInput.action) {
+  const {action, content} = userInput;
+
+  if (action === `message`) {
+    return {role: `user`, content};
+  }
+
+  return {
+    role: `assistant`,
+    content: getAssistantStateContent(action, content),
+  };
+}
+
+function getAssistantStateContent(
+  action: 'choose-option' | 'select-image',
+  content: string,
+): string {
+  switch (action) {
+    case `choose-option`:
+      return `[user has chosen: ${content}]`;
     case `select-image`:
-      return {
-        role: `assistant`,
-        content: `[user wants to know more about the image ${userInput.url}. keep it short.]`,
-      };
-    case `message`:
-      return {
-        role: `user`,
-        content: userInput.content,
-      };
+      return `[user wants to know more about the image ${content}. keep it short.]`;
   }
 }

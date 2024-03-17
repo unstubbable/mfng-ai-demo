@@ -12,13 +12,13 @@ export const imageSearchParams = z.object({
     .string()
     .optional()
     .describe(
-      `Identifies a word or phrase that all documents in the search results must contain.`,
+      `Identifies a word or phrase that all search results must contain. Useful for artwork titles.`,
     ),
   excludeTerms: z
     .string()
     .optional()
     .describe(
-      `Identifies a word or phrase that should not appear in any documents in the search results.`,
+      `Identifies a word or phrase that should not appear in any search result.`,
     ),
   imgColorType: z
     .enum([`color`, `gray`, `mono`, `trans`])
