@@ -12,7 +12,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: AWS
+    environment:
+      name: AWS
+      url: https://ai-demo.mfng.strict.software
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_HANDLER_VERIFY_HEADER: ${{ secrets.AWS_HANDLER_VERIFY_HEADER }}

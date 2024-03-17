@@ -12,7 +12,9 @@ jobs:
   deploy-preview:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    environment: AWS Preview
+    environment:
+      name: AWS Preview
+      url: https://ai-demo-preview.mfng.strict.software
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_HANDLER_VERIFY_HEADER: ${{ secrets.AWS_HANDLER_VERIFY_HEADER }}
