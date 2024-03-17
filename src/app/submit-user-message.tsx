@@ -42,6 +42,8 @@ export async function submitUserMessage(
         Never ask the user whether they want to see images of the discussed subject, always show them unprompted.
 
         Before showing images of a certain artist it might make sense to introduce them to the user first, with a couple of words.
+
+        The user can also select an image if they want to know more about it.
         `,
       },
       ...aiState.get(),
@@ -63,7 +65,7 @@ export async function submitUserMessage(
 
         If the images to search for are distinctly different from each other (e.g. two different, titled paintings by the same artist), split it the search up into multiple search parameter sets.
 
-        Select three images overall, unless the user asks for more or less.
+        Select three images overall, unless the user asks for more or less. When searching for a specific artwork, select only one image.
 
         Never call the function more than once in a message, instead use multiple searches within the same function call.
         `,
