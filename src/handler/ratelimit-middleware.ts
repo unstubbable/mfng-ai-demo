@@ -8,7 +8,6 @@ try {
   ratelimit = new Ratelimit({
     redis: Redis.fromEnv(),
     limiter: Ratelimit.fixedWindow(10, `10 m`),
-    analytics: true,
   });
 } catch (error) {
   if (process.env.UPSTASH_REDIS_REST_URL) {
@@ -34,9 +33,8 @@ export const ratelimitMiddleware: MiddlewareHandler = async (context, next) => {
   }
 
   try {
-    const {success, reset, remaining, pending} = await ratelimit.limit(address);
+    const {success, reset, remaining} = await ratelimit.limit(address);
     console.debug(`Rate limit result`, {address, success, remaining});
-    await pending;
 
     if (!success) {
       console.warn(`Too Many Requests by ${address}`);
