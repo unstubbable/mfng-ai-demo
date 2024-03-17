@@ -57,7 +57,10 @@ export function Chat({children}: React.PropsWithChildren): React.ReactNode {
       ]);
 
       try {
-        const message = await submitUserMessage(userInput);
+        const message = await submitUserMessage({
+          action: `message`,
+          content: userInput,
+        });
 
         setMessages((prevMessages) => [...prevMessages, message]);
       } catch (error) {

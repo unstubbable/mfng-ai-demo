@@ -14,13 +14,33 @@ import {ProgressiveImage} from './progressive-image.js';
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
+export type UserInput =
+  | {action: 'message'; content: string}
+  | {action: 'select-image'; url: string};
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function submitUserMessage(
-  userInput: string,
+  userInput: UserInput,
 ): Promise<UIStateItem> {
   const aiState = getMutableAIState<typeof AI>();
 
-  aiState.update([...aiState.get(), {role: `user`, content: userInput}]);
+  switch (userInput.action) {
+    case `select-image`:
+      aiState.update([
+        ...aiState.get(),
+        {
+          role: `assistant`,
+          content: `[user wants to know more about the image ${userInput.url}. keep it short.]`,
+        },
+      ]);
+      break;
+    case `message`:
+      aiState.update([
+        ...aiState.get(),
+        {role: `user`, content: userInput.content},
+      ]);
+      break;
+  }
 
   let lastTextContent: string | undefined;
 
