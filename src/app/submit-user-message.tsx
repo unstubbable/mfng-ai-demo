@@ -6,15 +6,10 @@ import * as React from 'react';
 import {z} from 'zod';
 import {type UserInput, fromUserInput} from './ai-state.js';
 import type {AI, UIStateItem} from './ai.js';
-import {imageSearchParams, searchImages} from './google-image-search.js';
-import {
-  createImageSearchResult,
-  serializeImageSearchResults,
-} from './image-search-utils.js';
-import {ImageSelector} from './image-selector.js';
+import {imageSearchParams} from './google-image-search.js';
+import {Images} from './images.js';
 import {LoadingIndicator} from './loading-indicator.js';
 import {Markdown} from './markdown.js';
-import {ProgressiveImage} from './progressive-image.js';
 import {UserChoiceButton} from './user-choice-button.js';
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
@@ -173,8 +168,8 @@ export async function submitUserMessage(
             )
             .describe(`Use multiple sets of search parameters if needed.`),
         }),
-        async *render({loadingText, searches: searchParamsList}) {
-          console.log(`search_and_show_images`, searchParamsList);
+        async *render({loadingText, searches}) {
+          console.log(`search_and_show_images`, searches);
 
           const text = lastTextContent ? (
             <div>
@@ -189,18 +184,6 @@ export async function submitUserMessage(
             </div>
           );
 
-          const imageSearchResults = await Promise.all(
-            searchParamsList.map(
-              async ({searchParams, title, notFoundMessage, errorMessage}) =>
-                createImageSearchResult({
-                  response: await searchImages(searchParams),
-                  title,
-                  notFoundMessage,
-                  errorMessage,
-                }),
-            ),
-          );
-
           if (lastTextContent) {
             aiState.update((prevAiState) => [
               ...prevAiState,
@@ -208,50 +191,53 @@ export async function submitUserMessage(
             ]);
           }
 
+          const elementsWithData = searches.map(
+            ({title, notFoundMessage, errorMessage, searchParams}) => {
+              let resolveDataPromise: (data: unknown) => void;
+
+              return {
+                element: (
+                  <Images
+                    key={title}
+                    title={title}
+                    notFoundMessage={notFoundMessage}
+                    errorMessage={errorMessage}
+                    searchParams={searchParams}
+                    onDataFetched={(data) => resolveDataPromise(data)}
+                  />
+                ),
+                dataPromise: new Promise(
+                  (resolve) => (resolveDataPromise = resolve),
+                ),
+              };
+            },
+          );
+
+          const finalUi = (
+            <div className="space-y-4">
+              {text}
+              <div className="space-y-3">
+                {elementsWithData.map(({element}) => element)}
+              </div>
+            </div>
+          );
+
+          yield finalUi;
+
+          const dataItems = await Promise.all(
+            elementsWithData.map(async ({dataPromise}) => dataPromise),
+          );
+
           aiState.done([
             ...aiState.get(),
             {
               role: `function`,
               name: `search_and_show_images`,
-              content: serializeImageSearchResults(imageSearchResults),
+              content: JSON.stringify(dataItems),
             },
           ]);
 
-          return (
-            <div className="space-y-4">
-              {text}
-              <div className="space-y-3">
-                {imageSearchResults.map((result) => (
-                  <React.Fragment key={result.title}>
-                    <h4 className="text-l font-bold">{result.title}</h4>
-                    {result.status === `found` ? (
-                      result.images.map(
-                        ({thumbnailUrl, url, width, height}) => (
-                          <ImageSelector key={thumbnailUrl} url={url}>
-                            <ProgressiveImage
-                              thumbnailUrl={thumbnailUrl}
-                              url={url}
-                              width={width}
-                              height={height}
-                              alt={result.title}
-                            />
-                          </ImageSelector>
-                        ),
-                      )
-                    ) : (
-                      <p className="text-sm">
-                        <em>
-                          {result.status === `not-found`
-                            ? result.notFoundMessage
-                            : result.errorMessage}
-                        </em>
-                      </p>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          );
+          return finalUi;
         },
       },
     },
