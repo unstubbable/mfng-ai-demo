@@ -37,13 +37,9 @@ export function createImageSearchResult(
     : {status: `found`, images: response, title};
 }
 
-export function serializeImageSearchResults(
-  imageSearchResults: ImageSearchResult[],
-): string {
-  return JSON.stringify(imageSearchResults.map(reduceImageSarchResult));
-}
-
-function reduceImageSarchResult(imageSearchResult: ImageSearchResult) {
+export function prepareImageSearchResultForAiState(
+  imageSearchResult: ImageSearchResult,
+): unknown {
   const {status, title} = imageSearchResult;
 
   if (imageSearchResult.status === `found`) {
