@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 export type Image = z.TypeOf<typeof image>;
-export type ImageSearchResult = z.TypeOf<typeof imageSearchResult>;
+export type ImageSearchResponse = z.TypeOf<typeof imageSearchResponse>;
 
 const apiKey = process.env.GOOGLE_SEARCH_API_KEY!;
 const searchEngineId = process.env.GOOGLE_SEARCH_SEARCH_ENGINE_ID!;
@@ -87,11 +87,11 @@ const error = z.object({
   error: z.object({code: z.number(), message: z.string()}),
 });
 
-const imageSearchResult = z.union([error, images]);
+const imageSearchResponse = z.union([error, images]);
 
 export async function searchImages(
   params: z.TypeOf<typeof imageSearchParams>,
-): Promise<z.TypeOf<typeof imageSearchResult>> {
+): Promise<z.TypeOf<typeof imageSearchResponse>> {
   const url = new URL(`https://www.googleapis.com/customsearch/v1`);
 
   url.search = new URLSearchParams({
@@ -105,7 +105,7 @@ export async function searchImages(
 
   const response = await fetch(url);
   const json = await response.json();
-  const result = imageSearchResult.safeParse(json);
+  const result = imageSearchResponse.safeParse(json);
 
   if (result.success) {
     return result.data;

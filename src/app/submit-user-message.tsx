@@ -7,8 +7,11 @@ import {z} from 'zod';
 import {type UserInput, fromUserInput} from './ai-state.js';
 import type {AI, UIStateItem} from './ai.js';
 import {imageSearchParams, searchImages} from './google-image-search.js';
+import {
+  createImageSearchResult,
+  serializeImageSearchResults,
+} from './image-search-utils.js';
 import {ImageSelector} from './image-selector.js';
-import {createImageSet, serializeImageSets} from './image-set.js';
 import {LoadingIndicator} from './loading-indicator.js';
 import {Markdown} from './markdown.js';
 import {ProgressiveImage} from './progressive-image.js';
@@ -187,11 +190,11 @@ export async function submitUserMessage(
             </div>
           );
 
-          const imageSets = await Promise.all(
+          const imageSearchResults = await Promise.all(
             searchParamsList.map(
               async ({searchParams, title, notFoundMessage, errorMessage}) =>
-                createImageSet({
-                  searchResult: await searchImages(searchParams),
+                createImageSearchResult({
+                  response: await searchImages(searchParams),
                   title,
                   notFoundMessage,
                   errorMessage,
@@ -211,7 +214,7 @@ export async function submitUserMessage(
             {
               role: `function`,
               name: `search_and_show_images`,
-              content: serializeImageSets(imageSets),
+              content: serializeImageSearchResults(imageSearchResults),
             },
           ]);
 
@@ -219,11 +222,11 @@ export async function submitUserMessage(
             <div className="space-y-4">
               {text}
               <div className="space-y-3">
-                {imageSets.map((imageSet) => (
-                  <React.Fragment key={imageSet.title}>
-                    <h4 className="text-l font-bold">{imageSet.title}</h4>
-                    {imageSet.status === `found` ? (
-                      imageSet.images.map(
+                {imageSearchResults.map((result) => (
+                  <React.Fragment key={result.title}>
+                    <h4 className="text-l font-bold">{result.title}</h4>
+                    {result.status === `found` ? (
+                      result.images.map(
                         ({thumbnailUrl, url, width, height}) => (
                           <ImageSelector key={thumbnailUrl} url={url}>
                             <ProgressiveImage
@@ -231,7 +234,7 @@ export async function submitUserMessage(
                               url={url}
                               width={width}
                               height={height}
-                              alt={imageSet.title}
+                              alt={result.title}
                             />
                           </ImageSelector>
                         ),
@@ -239,9 +242,9 @@ export async function submitUserMessage(
                     ) : (
                       <p className="text-sm">
                         <em>
-                          {imageSet.status === `not-found`
-                            ? imageSet.notFoundMessage
-                            : imageSet.errorMessage}
+                          {result.status === `not-found`
+                            ? result.notFoundMessage
+                            : result.errorMessage}
                         </em>
                       </p>
                     )}
