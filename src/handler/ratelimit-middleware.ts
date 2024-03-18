@@ -2,7 +2,7 @@ import {Ratelimit} from '@upstash/ratelimit';
 import {Redis} from '@upstash/redis';
 import type {MiddlewareHandler} from 'hono';
 
-let ratelimit: Ratelimit;
+let ratelimit: Ratelimit | undefined;
 
 try {
   ratelimit = new Ratelimit({
