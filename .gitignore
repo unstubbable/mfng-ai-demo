@@ -6,4 +6,4 @@ tsconfig.tsbuildinfo
 .turbo
 cdk.out
 cdk.context.json
-dev-server/openai-tapes
+dev-server/tapes
