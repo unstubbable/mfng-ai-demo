@@ -38,6 +38,7 @@ if (process.env.OPENAI_BASE_URL?.startsWith(`http://localhost`)) {
     port: parseInt(port, 10),
     path: path.join(import.meta.dirname, `tapes/openai`),
     summary: false,
+    ignoreHeaders: [`user-agent`],
   });
 
   await talkbackServer.start(() => console.log(`Talkback server started`));
