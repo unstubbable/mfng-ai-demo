@@ -73,6 +73,7 @@
     "source-map-loader": "^4.0.1",
     "swc-loader": "^0.2.6",
     "tailwindcss": "^3.2.7",
+    "talkback": "^3.0.2",
     "tsx": "^4.7.1",
     "turbo": "~1.11.3",
     "typescript": "^5.4.2",

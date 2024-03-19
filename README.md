@@ -49,10 +49,17 @@ For more information on the Google Custom Search JSON API, visit:
 
 ### Dev Server
 
-To start the development server (which watches for file changes), run:
+To start the dev server (which watches for file changes), run:
 
 ```
 npm run dev
+```
+
+Recording and replaying OpenAI responses can be enabled by starting the dev
+server as follows:
+
+```
+OPENAI_BASE_URL=http://localhost:3001/v1/ npm run dev
 ```
 
 ### Browser

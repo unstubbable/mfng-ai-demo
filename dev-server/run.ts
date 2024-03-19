@@ -1,7 +1,9 @@
+import path from 'path';
 import {serve} from '@hono/node-server';
 import {serveStatic} from '@hono/node-server/serve-static';
 import {Hono} from 'hono';
 import {compress} from 'hono/compress';
+import talkbackModule from 'talkback';
 import {authMiddleware} from './auth-middleware.js';
 import './stub-awslambda.js';
 
@@ -23,3 +25,20 @@ serve({fetch: app.fetch, port: 3000}, ({address, port}) => {
 
   return console.log(`Started dev server at ${serverUrl}`);
 });
+
+if (process.env.OPENAI_BASE_URL?.startsWith(`http://localhost`)) {
+  const {port} = new URL(process.env.OPENAI_BASE_URL);
+
+  // hacky kind of es module interop
+  const talkback = talkbackModule as unknown as typeof talkbackModule.default;
+
+  const talkbackServer = talkback({
+    host: `https://api.openai.com`,
+    record: talkback.Options.RecordMode.NEW,
+    port: parseInt(port, 10),
+    path: path.join(import.meta.dirname, `tapes/openai`),
+    summary: false,
+  });
+
+  await talkbackServer.start(() => console.log(`Talkback server started`));
+}
