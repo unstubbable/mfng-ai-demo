@@ -23,7 +23,7 @@
       "dependsOn": ["build"],
       "cache": false
     },
-    "start": {
+    "start-dev-server": {
       "cache": false,
       "persistent": true
     },

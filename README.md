@@ -62,6 +62,12 @@ server as follows:
 OPENAI_BASE_URL=http://localhost:3001/v1/ npm run dev
 ```
 
+To start the dev server in production mode, run:
+
+```
+npm start
+```
+
 ### Browser
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
