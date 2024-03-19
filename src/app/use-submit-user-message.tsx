@@ -3,6 +3,7 @@ import * as React from 'react';
 import type {UserInputAction} from './ai-state.js';
 import type {AI} from './ai.js';
 import {getErrorMessage} from './get-error-message.js';
+import {LoadingIndicator} from './loading-indicator.js';
 
 export function useSubmitUserMessage(
   action: UserInputAction,
@@ -16,7 +17,11 @@ export function useSubmitUserMessage(
 
     setMessages((prevMessages) => [
       ...prevMessages,
-      {id: optimisticMessageId, role: `assistant`, display: <p>&hellip;</p>},
+      {
+        id: optimisticMessageId,
+        role: `assistant`,
+        display: <LoadingIndicator />,
+      },
     ]);
 
     document.body.scrollIntoView({block: `end`, behavior: `smooth`});
