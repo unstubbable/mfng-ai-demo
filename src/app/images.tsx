@@ -15,6 +15,19 @@ export interface ImagesProps {
   readonly onDataFetched: (dataForAiState: unknown) => void;
 }
 
+type ImagesContainerProps = React.PropsWithChildren<{
+  readonly title: string;
+}>;
+
+function ImagesContainer({title, children}: ImagesContainerProps) {
+  return (
+    <div className="space-y-3">
+      <h4 className="text-l font-bold">{title}</h4>
+      {children}
+    </div>
+  );
+}
+
 export async function Images({
   title,
   notFoundMessage,
@@ -40,15 +53,16 @@ export async function Images({
         : result.errorMessage;
 
     return (
-      <p className="text-sm">
-        <em>{message}</em>
-      </p>
+      <ImagesContainer title={result.title}>
+        <p className="text-sm">
+          <em>{message}</em>
+        </p>
+      </ImagesContainer>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <h4 className="text-l font-bold">{result.title}</h4>
+    <ImagesContainer title={result.title}>
       {result.images.map(({thumbnailUrl, url, width, height}) => (
         <ImageSelector key={thumbnailUrl} url={url}>
           <ProgressiveImage
@@ -60,6 +74,6 @@ export async function Images({
           />
         </ImageSelector>
       ))}
-    </div>
+    </ImagesContainer>
   );
 }
