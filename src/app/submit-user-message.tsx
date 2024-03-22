@@ -31,7 +31,6 @@ export async function submitUserMessage(
 
   const ui = render({
     model: `gpt-4-turbo-preview`,
-    // @ts-expect-error
     provider: openai,
     initial: <LoadingIndicator />,
     messages: [

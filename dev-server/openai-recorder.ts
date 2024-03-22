@@ -1,6 +1,6 @@
 import path from 'path';
 import filenamify from 'filenamify';
-import talkbackModule from 'talkback';
+import talkback from 'talkback';
 import {z} from 'zod';
 
 export interface OpenAiRecorderOptions {
@@ -20,9 +20,6 @@ const chatCompletionsRequestBody = z.object({
     }),
   ),
 });
-
-// hacky kind of es module interop
-const talkback = talkbackModule as unknown as typeof talkbackModule.default;
 
 export async function startOpenAiRecorder({
   port,
