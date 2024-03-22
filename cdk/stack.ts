@@ -160,13 +160,12 @@ export class Stack extends cdk.Stack {
             path.join(distDirname, `static/client`),
           ),
         ],
-        distribution,
-        distributionPaths: [`/client/*`],
         cacheControl: [
           cdk.aws_s3_deployment.CacheControl.setPublic(),
           cdk.aws_s3_deployment.CacheControl.maxAge(cdk.Duration.days(365)),
           cdk.aws_s3_deployment.CacheControl.immutable(),
         ],
+        prune: false,
       },
     );
 
@@ -183,6 +182,7 @@ export class Stack extends cdk.Stack {
         cdk.aws_s3_deployment.CacheControl.setPublic(),
         cdk.aws_s3_deployment.CacheControl.maxAge(cdk.Duration.days(3)),
       ],
+      prune: false,
     });
 
     new cdk.CfnOutput(this, `function-url-output`, {
