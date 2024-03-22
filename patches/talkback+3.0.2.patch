@@ -1,0 +1,12 @@
+diff --git a/node_modules/talkback/server.js b/node_modules/talkback/server.js
+index 2a5ef99..3119fae 100644
+--- a/node_modules/talkback/server.js
++++ b/node_modules/talkback/server.js
+@@ -159,6 +159,7 @@ var TalkbackServer = /** @class */ (function () {
+             var summary = new summary_1.default(this.tapeStore.tapes, this.options);
+             summary.print();
+         }
++        process.exit(0);
+     };
+     return TalkbackServer;
+ }());
