@@ -2,6 +2,7 @@ import {z} from 'zod';
 
 export type Image = z.TypeOf<typeof image>;
 export type ImageSearchResponse = z.TypeOf<typeof imageSearchResponse>;
+export type ImageSearchParams = z.TypeOf<typeof imageSearchParams>;
 
 const apiKey = process.env.GOOGLE_SEARCH_API_KEY!;
 const searchEngineId = process.env.GOOGLE_SEARCH_SEARCH_ENGINE_ID!;
