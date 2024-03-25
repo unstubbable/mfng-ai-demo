@@ -21,10 +21,12 @@ import {
   reactSsrManifest,
 } from './manifests.js';
 import {ratelimitMiddleware} from './ratelimit-middleware.js';
+import {requestBodyMiddleware} from './request-body-middleware.js';
 
 export const app = new Hono();
 
 app.use(authMiddleware);
+app.use(requestBodyMiddleware);
 app.use(ratelimitMiddleware);
 app.use(loggerMiddleware);
 app.get(`/*`, async (context) => handleGet(context.req.raw));

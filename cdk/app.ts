@@ -13,5 +13,5 @@ new Stack(app, `mfng-ai-demo`, {
   },
   bucketName: `mfng-ai-demo-assets`,
   customDomain: {domainName: `strict.software`, subdomainName: `ai-demo.mfng`},
-  webAclName: `mfng-ai-demo`,
+  // webAclName: `mfng-ai-demo`,
 });
