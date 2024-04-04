@@ -16,5 +16,5 @@ new Stack(app, `mfng-ai-demo-preview`, {
     domainName: `strict.software`,
     subdomainName: `ai-demo-preview.mfng`,
   },
-  webAclName: `mfng-ai-demo-preview`,
+  // webAclName: `mfng-ai-demo-preview`,
 });
