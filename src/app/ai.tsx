@@ -1,6 +1,6 @@
+import type {CoreMessage} from 'ai';
 import {createAI} from 'ai/rsc';
 import type * as React from 'react';
-import type {AIStateItem} from './ai-state.js';
 import {submitUserMessage} from './submit-user-message.js';
 
 export interface UIStateItem {
@@ -9,7 +9,7 @@ export interface UIStateItem {
   readonly display: React.ReactNode;
 }
 
-const initialAIState: AIStateItem[] = [];
+const initialAIState: CoreMessage[] = [];
 const initialUIState: UIStateItem[] = [];
 
 export const AI = createAI({

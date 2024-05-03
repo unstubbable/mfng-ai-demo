@@ -1,7 +1,8 @@
 'use server';
 
-import {getMutableAIState, render} from 'ai/rsc';
-import {OpenAI} from 'openai';
+import {createOpenAI} from '@ai-sdk/openai';
+import type {AssistantContent} from 'ai';
+import {getMutableAIState, streamUI} from 'ai/rsc';
 import * as React from 'react';
 import {z} from 'zod';
 import {type UserInput, fromUserInput} from './ai-state.js';
@@ -12,9 +13,6 @@ import {LoadingIndicator} from './loading-indicator.js';
 import {Markdown} from './markdown.js';
 import {UserChoiceButton} from './user-choice-button.js';
 
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
-
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function submitUserMessage(
   userInput: UserInput,
 ): Promise<UIStateItem> {
@@ -24,38 +22,32 @@ export async function submitUserMessage(
 
   let lastTextContent: string | undefined;
 
-  const ui = render({
-    model: `gpt-4-turbo-preview`,
-    provider: openai,
+  const ui = await streamUI({
+    model: createOpenAI({baseURL: process.env.OPENAI_BASE_URL})(`gpt-4-turbo`),
     initial: <LoadingIndicator />,
-    messages: [
-      {
-        role: `system`,
-        content: `You are a chat assistant with a focus on images (photos, paintings, cliparts, animated gifs, etc.).
+    system: `You are a chat assistant with a focus on images (photos, paintings, cliparts, animated gifs, etc.).
 
-        A user might ask for images of any kind (only safe for work, though!) and you search for them and show them, using the input of the user for the various search parameters.
+    A user might ask for images of any kind (only safe for work, though!) and you search for them and show them, using the input of the user for the various search parameters.
 
-        Always prefer to show specific titled art pieces. If in doubt, just pick some that you know.
+    Always prefer to show specific titled art pieces. If in doubt, just pick some that you know.
 
-        When it comes to art, try to show known images to the user with their title. Think about it step by step to come up with specific search queries. E.g. first select a style, then select an artist for that style, and then search for the specific painting (e.g. surrealism -> Dalí -> The Persistence of Memory -> query terms: ["Salvador Dalí", "The Persistence of Memory"]). Do this process a couple of times to come up with a diverse set of images in one single message.
+    When it comes to art, try to show known images to the user with their title. Think about it step by step to come up with specific search queries. E.g. first select a style, then select an artist for that style, and then search for the specific painting (e.g. surrealism -> Dalí -> The Persistence of Memory -> query terms: ["Salvador Dalí", "The Persistence of Memory"]). Do this process a couple of times to come up with a diverse set of images in one single message.
 
-        Use markdown in your messages if it improves how you can structure a response, highlight certain parts (especially the discussed subject's name/title should be strong), or to add links to other websites.
+    Use markdown in your messages if it improves how you can structure a response, highlight certain parts (especially the discussed subject's name/title should be strong), or to add links to other websites.
 
-        Don't include images in markdown, use the dedicated tool instead.
+    Don't include images in markdown, use the dedicated tool instead.
 
-        Never ask the user whether they want to see images of the discussed subject, always show them unprompted.
+    Never ask the user whether they want to see images of the discussed subject, always show them unprompted.
 
-        Before showing images of a certain artist it might make sense to introduce them to the user first, with a couple of words.
+    Before showing images of a certain artist it might make sense to introduce them to the user first, with a couple of words.
 
-        The user can also select an image if they want to know more about it.
+    The user can also select an image if they want to know more about it.
 
-        When asking the user a question, you may present them with options to choose from.
+    When asking the user a question, you may present them with options to choose from.
 
-        Use the provided tools to show an interactive UI, along with your textual messages.
-        `,
-      },
-      ...aiState.get(),
-    ],
+    Use the provided tools to show an interactive UI, along with your textual messages.
+    `,
+    messages: aiState.get(),
     text: ({content, done}) => {
       lastTextContent = content;
 
@@ -88,22 +80,33 @@ export async function submitUserMessage(
             }),
           ),
         }),
-        render({intro, options}) {
+        generate({intro, options}, {toolName, toolCallId}) {
           console.log(`get_choice_from_user`, options);
 
+          const assistentContent: AssistantContent = [
+            {
+              type: `tool-call`,
+              args: {intro, options},
+              toolName,
+              toolCallId,
+            },
+          ];
+
           if (lastTextContent) {
-            aiState.update((prevAiState) => [
-              ...prevAiState,
-              {role: `assistant`, content: lastTextContent!},
-            ]);
+            assistentContent.unshift({type: `text`, text: lastTextContent});
           }
 
           aiState.done([
             ...aiState.get(),
             {
-              role: `function`,
-              name: `get_choice_from_user`,
-              content: JSON.stringify({options}),
+              role: `assistant`,
+              content: assistentContent,
+            },
+            {
+              role: `tool`,
+              content: [
+                {type: `tool-result`, toolName, toolCallId, result: {options}},
+              ],
             },
           ]);
 
@@ -168,7 +171,7 @@ export async function submitUserMessage(
             )
             .describe(`Use multiple sets of search parameters if needed.`),
         }),
-        async *render({loadingText, searches}) {
+        async *generate({loadingText, searches}, {toolName, toolCallId}) {
           console.log(`search_and_show_images`, searches);
 
           const text = lastTextContent ? (
@@ -184,12 +187,23 @@ export async function submitUserMessage(
             </div>
           );
 
+          const assistentContent: AssistantContent = [
+            {
+              type: `tool-call`,
+              args: {loadingText, searches},
+              toolName,
+              toolCallId,
+            },
+          ];
+
           if (lastTextContent) {
-            aiState.update((prevAiState) => [
-              ...prevAiState,
-              {role: `assistant`, content: lastTextContent!},
-            ]);
+            assistentContent.unshift({type: `text`, text: lastTextContent});
           }
+
+          aiState.update((prevAiState) => [
+            ...prevAiState,
+            {role: `assistant`, content: assistentContent},
+          ]);
 
           const elementsWithData = searches.map(
             ({title, notFoundMessage, errorMessage, searchParams}) => {
@@ -231,9 +245,10 @@ export async function submitUserMessage(
           aiState.done([
             ...aiState.get(),
             {
-              role: `function`,
-              name: `search_and_show_images`,
-              content: JSON.stringify(dataItems),
+              role: `tool`,
+              content: [
+                {type: `tool-result`, toolName, toolCallId, result: dataItems},
+              ],
             },
           ]);
 
@@ -243,5 +258,5 @@ export async function submitUserMessage(
     },
   });
 
-  return {id: Date.now(), role: `assistant`, display: ui};
+  return {id: Date.now(), role: `assistant`, display: ui.value};
 }
