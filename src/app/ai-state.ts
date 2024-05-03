@@ -1,13 +1,4 @@
-export type AIStateItem =
-  | {
-      readonly role: 'user' | 'assistant' | 'system';
-      readonly content: string;
-    }
-  | {
-      readonly role: 'function';
-      readonly content: string;
-      readonly name: string;
-    };
+import type {CoreMessage} from 'ai';
 
 export type UserInputAction = 'choose-option' | 'message' | 'select-image';
 
@@ -16,7 +7,7 @@ export interface UserInput {
   readonly content: string;
 }
 
-export function fromUserInput(userInput: UserInput): AIStateItem {
+export function fromUserInput(userInput: UserInput): CoreMessage {
   const {action, content} = userInput;
 
   if (action === `message`) {
@@ -24,19 +15,19 @@ export function fromUserInput(userInput: UserInput): AIStateItem {
   }
 
   return {
-    role: `assistant`,
-    content: getAssistantStateContent(action, content),
+    role: `user`,
+    content: getUserActionContent(action, content),
   };
 }
 
-function getAssistantStateContent(
+function getUserActionContent(
   action: 'choose-option' | 'select-image',
   content: string,
 ): string {
   switch (action) {
     case `choose-option`:
-      return `[user has chosen: ${content}]`;
+      return `I choose: ${content}`;
     case `select-image`:
-      return `[user wants to know more about the image ${content}. keep it short.]`;
+      return `I want to know more about the image ${content}. Keep it short.`;
   }
 }
