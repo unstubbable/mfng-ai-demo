@@ -26,13 +26,15 @@
     "watch:dev": "webpack --mode development --watch"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.9",
+    "@ai-sdk/openai": "^0.0.40",
+    "@ai-sdk/react": "^0.0.36",
+    "@ai-sdk/ui-utils": "^0.0.24",
     "@mfng/core": "^4.1.4",
     "@upstash/ratelimit": "^1.0.1",
     "@upstash/redis": "^1.28.4",
-    "ai": "^3.1.1",
+    "ai": "^3.2.45",
     "clsx": "^1.2.1",
-    "openai": "^4.40.1",
+    "openai": "4.52.6",
     "react": "19.0.0-rc-06d0b89e-20240801",
     "react-dom": "19.0.0-rc-06d0b89e-20240801",
     "react-markdown": "^9.0.1",
